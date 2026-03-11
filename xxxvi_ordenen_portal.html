@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XXXVI-Ordenen</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --panel: rgba(12, 12, 12, 0.82);
+      --panel-border: rgba(212, 175, 55, 0.35);
+      --gold: #d4af37;
+      --gold-soft: #f2deb0;
+      --text: #f6f1e4;
+      --muted: #b8ae92;
+      --danger: #d96c6c;
+      --success: #98c379;
+      --shadow: 0 0 40px rgba(212, 175, 55, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(212, 175, 55, 0.12), transparent 35%),
+        linear-gradient(180deg, #111 0%, #090909 50%, #050505 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+      opacity: 0.22;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 760px;
+    }
+
+    .card {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      padding: 40px 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+      overflow: hidden;
+    }
+
+    .card::before,
+    .card::after {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(212,175,55,0.09), transparent 70%);
+      pointer-events: none;
+    }
+
+    .card::before { top: -110px; right: -60px; }
+    .card::after { bottom: -120px; left: -80px; }
+
+    .sigil {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 16px;
+      font-size: 42px;
+      color: var(--gold);
+      letter-spacing: 6px;
+      text-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
+    }
+
+    h1 {
+      margin: 0;
+      text-align: center;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      letter-spacing: 0.12em;
+      color: var(--gold-soft);
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      margin: 12px auto 0;
+      max-width: 560px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1.02rem;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 28px 0;
+      color: var(--gold);
+      opacity: 0.9;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent);
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+      color: var(--gold-soft);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      background: rgba(0, 0, 0, 0.45);
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    input:focus {
+      border-color: rgba(212, 175, 55, 0.7);
+      box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.12);
+      transform: translateY(-1px);
+    }
+
+    button {
+      padding: 16px 22px;
+      border-radius: 14px;
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      background: linear-gradient(180deg, rgba(212,175,55,0.18), rgba(212,175,55,0.08));
+      color: var(--gold-soft);
+      font-size: 0.98rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212, 175, 55, 0.75);
+      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+    }
+
+    .status {
+      min-height: 28px;
+      margin-top: 14px;
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    .status.error { color: var(--danger); }
+    .status.success { color: var(--success); }
+
+    .panel {
+      margin-top: 26px;
+      padding: 18px 18px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(212, 175, 55, 0.18);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      color: var(--gold-soft);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .panel p,
+    .panel li {
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .panel ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      color: rgba(242, 222, 176, 0.75);
+      font-size: 0.92rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .tiny {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: rgba(184, 174, 146, 0.72);
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .card { padding: 28px 18px; border-radius: 20px; }
+      .input-row { grid-template-columns: 1fr; }
+      button { width: 100%; }
+      .sigil { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <div class="sigil">☉ XXXVI ☉</div>
+      <h1>XXXVI-Ordenen</h1>
+      <p class="subtitle">
+        Kun de indviede må fortsætte. Indtast den kode, du har modtaget i din indkaldelse,
+        for at bekræfte din tilstedeværelse ved den forestående samling.
+      </p>
+
+      <div class="divider">✦</div>
+
+      <label class="label" for="code">Adgangskode</label>
+      <div class="input-row">
+        <input id="code" name="code" type="text" placeholder="Eksempel: HACK-03" autocomplete="off" />
+        <button id="submitBtn" type="button">Åbn portalen</button>
+      </div>
+      <div id="status" class="status" aria-live="polite"></div>
+
+      <section class="panel">
+        <h2>Instruks</h2>
+        <p>
+          Din kode afgør, hvilken ordenstilknytning og hvilken formular du videresendes til.
+          Koden kan kun anvendes af den person, der har modtaget indkaldelsen.
+        </p>
+      </section>
+
+      <div class="footer">Fortes Fortuna Adiuvat</div>
+      <div class="tiny">Lørdag d. 13. juni · Mellemløkken 3 · Årslev</div>
+    </section>
+  </main>
+
+  <script>
+    // INDSÆT DINE RIGTIGE LINKS HER.
+    // Hver kode peger på et prefilled Google Form-link.
+    const invitationMap = {
+      "HACK-01": {
+        team: "Hackermen",
+        url: "https://docs.google.com/forms/d/e/REPLACE_ME/viewform?usp=pp_url&entry.1111111111=Andreas&entry.2222222222=Hackermen&entry.3333333333=HACK-01"
+      },
+      "HACK-02": {
+        team: "Hackermen",
+        url: "https://docs.google.com/forms/d/e/REPLACE_ME/viewform?usp=pp_url&entry.1111111111=Lasse&entry.2222222222=Hackermen&entry.3333333333=HACK-02"
+      },
+      "LAER-01": {
+        team: "Lærermænd",
+        url: "https://docs.google.com/forms/d/e/REPLACE_ME/viewform?usp=pp_url&entry.1111111111=Martin&entry.2222222222=Lærermænd&entry.3333333333=LAER-01"
+      },
+      "FAM-01": {
+        team: "La Familia",
+        url: "https://docs.google.com/forms/d/e/REPLACE_ME/viewform?usp=pp_url&entry.1111111111=Anna&entry.2222222222=La%20Familia&entry.3333333333=FAM-01"
+      },
+      "LOGE-01": {
+        team: "Ølloge",
+        url: "https://docs.google.com/forms/d/e/REPLACE_ME/viewform?usp=pp_url&entry.1111111111=Peter&entry.2222222222=%C3%98lloge&entry.3333333333=LOGE-01"
+      }
+    };
+
+    const codeInput = document.getElementById("code");
+    const submitBtn = document.getElementById("submitBtn");
+    const statusEl = document.getElementById("status");
+
+    function normalizeCode(value) {
+      return value.trim().toUpperCase().replace(/\s+/g, "");
+    }
+
+    function showStatus(message, type) {
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`;
+    }
+
+    function openPortal() {
+      const rawCode = codeInput.value;
+      const code = normalizeCode(rawCode);
+
+      if (!code) {
+        showStatus("Du skal indtaste en adgangskode for at fortsætte.", "error");
+        return;
+      }
+
+      const match = invitationMap[code];
+
+      if (!match) {
+        showStatus("Koden blev ikke genkendt. Kontroller indkaldelsen og prøv igen.", "error");
+        return;
+      }
+
+      showStatus(`Adgang godkendt. Videresender til Team ${match.team}...`, "success");
+      submitBtn.disabled = true;
+      codeInput.disabled = true;
+
+      setTimeout(() => {
+        window.location.href = match.url;
+      }, 900);
+    }
+
+    submitBtn.addEventListener("click", openPortal);
+    codeInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        openPortal();
+      }
+    });
+  </script>
+</body>
+</html>
