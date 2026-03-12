@@ -124,11 +124,12 @@
     h1 {
       margin: 0;
       text-align: center;
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      letter-spacing: 0.12em;
+      font-size: clamp(1.45rem, 5vw, 3.2rem);
+      letter-spacing: clamp(0.04em, 0.8vw, 0.12em);
       color: var(--gold-soft);
       text-transform: uppercase;
       text-shadow: 0 0 12px rgba(212,175,55,0.15);
+      white-space: nowrap;
     }
 
     .label {
@@ -624,6 +625,17 @@
         border-radius: 20px;
       }
 
+      h1 {
+        font-size: 1.7rem;
+        letter-spacing: 0.06em;
+      }
+
+      input,
+      input::placeholder {
+        font-size: 0.9rem;
+        letter-spacing: 0.04em;
+      }
+
       .input-row {
         grid-template-columns: 1fr;
       }
@@ -674,7 +686,7 @@
       <div id="lockedView">
         <label class="label" for="code">Adgangskode</label>
         <div class="input-row">
-          <input id="code" name="code" type="text" placeholder="Koden fra Deres indkaldelse" autocomplete="off" />
+          <input id="code" name="code" type="text" placeholder="Indtast indkaldelseskoden" autocomplete="off" />
           <button id="submitBtn" type="button">Bryd segl</button>
         </div>
         <div id="status" class="status" aria-live="polite"></div>
