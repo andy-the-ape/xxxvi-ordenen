@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XXXVI-Ordenen</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --panel: rgba(12, 12, 12, 0.82);
+      --panel-border: rgba(212, 175, 55, 0.35);
+      --gold: #d4af37;
+      --gold-soft: #f2deb0;
+      --text: #f6f1e4;
+      --muted: #b8ae92;
+      --danger: #d96c6c;
+      --success: #98c379;
+      --shadow: 0 0 40px rgba(212, 175, 55, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(212, 175, 55, 0.12), transparent 35%),
+        linear-gradient(180deg, #111 0%, #090909 50%, #050505 100%);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 48px 24px;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+      opacity: 0.22;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 760px;
+    }
+
+    .card {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      padding: 56px 28px 40px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+      overflow: hidden;
+    }
+
+    .card::before,
+    .card::after {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(212,175,55,0.09), transparent 70%);
+      pointer-events: none;
+    }
+
+    .card::before { top: -140px; right: -80px; }
+    .card::after { bottom: -120px; left: -80px; }
+
+    .top-header {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .sigil {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-top: 4px;
+      margin-bottom: 12px;
+      font-size: 42px;
+      color: var(--gold);
+      letter-spacing: 6px;
+      text-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
+      animation: sigilGlow 6s ease-in-out infinite;
+    }
+
+    .sigil-ring {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,215,100,0.8);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sigil::after {
+      content: "";
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,175,55,0.15), transparent 70%);
+      filter: blur(18px);
+      z-index: -1;
+      animation: sigilAura 8s ease-in-out infinite;
+    }
+
+    h1 {
+      margin: 0;
+      text-align: center;
+      font-size: clamp(1.45rem, 5vw, 3.2rem);
+      letter-spacing: clamp(0.04em, 0.8vw, 0.12em);
+      color: var(--gold-soft);
+      text-transform: uppercase;
+      text-shadow: 0 0 12px rgba(212,175,55,0.15);
+      white-space: nowrap;
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+      color: var(--gold-soft);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      background: rgba(0, 0, 0, 0.45);
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    input:focus {
+      border-color: rgba(212, 175, 55, 0.7);
+      box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.12);
+      transform: translateY(-1px);
+    }
+
+    button {
+      padding: 16px 22px;
+      border-radius: 14px;
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      background: linear-gradient(180deg, rgba(212,175,55,0.18), rgba(212,175,55,0.08));
+      color: var(--gold-soft);
+      font-size: 0.98rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+      white-space: nowrap;
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212, 175, 55, 0.75);
+      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+    }
+
+    button:disabled {
+      opacity: 0.65;
+      cursor: default;
+      transform: none;
+    }
+
+    .status {
+      min-height: 28px;
+      margin-top: 14px;
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    .status.error { color: var(--danger); }
+    .status.success { color: var(--success); }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 28px 0 20px;
+      color: var(--gold);
+      opacity: 0.9;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212,175,55,0.5), transparent);
+    }
+
+    .info-box {
+      margin: 0 auto;
+      max-width: 620px;
+      border: 1px solid rgba(212, 175, 55, 0.22);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      overflow: hidden;
+      animation: reveal 0.45s ease;
+    }
+
+    .info-box summary {
+      list-style: none;
+      padding: 16px 18px;
+      color: var(--gold-soft);
+      font-size: 0.98rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      user-select: none;
+      position: relative;
+      cursor: default;
+    }
+
+    .info-box summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .info-box summary::after {
+      content: "▾";
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gold);
+    }
+
+    .info-box-content {
+      padding: 0 18px 18px;
+      border-top: 1px solid rgba(212, 175, 55, 0.14);
+    }
+
+    .info-box-content p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .team-badge {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      background: rgba(212, 175, 55, 0.08);
+      color: var(--gold-soft);
+      font-size: 0.86rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .sms-box {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(212, 175, 55, 0.16);
+      background: rgba(0, 0, 0, 0.22);
+    }
+
+    .sms-box strong {
+      color: var(--gold-soft);
+    }
+
+    .secondary-btn {
+      margin-top: 18px;
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .secondary-btn:hover {
+      border-color: rgba(212, 175, 55, 0.5);
+      color: var(--gold-soft);
+    }
+
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      color: rgba(242, 222, 176, 0.75);
+      font-size: 0.92rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .tiny {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: rgba(184, 174, 146, 0.72);
+      text-align: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .order-mark {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .order-mark::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      width: 360px;
+      height: 360px;
+      transform: translate(-50%, -50%);
+      background: url("logo.png") center / contain no-repeat;
+      opacity: 0.055;
+      filter: grayscale(1) brightness(1.1) blur(0.2px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      mask-image: radial-gradient(circle, black 55%, transparent 85%);
+    }
+
+    #lockedView,
+    #revealedView {
+      position: relative;
+      z-index: 2;
+    }
+
+    .seal-flash {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      background:
+        radial-gradient(circle at center, rgba(212, 175, 55, 0.22), rgba(212, 175, 55, 0.08) 24%, transparent 55%),
+        radial-gradient(circle at center, rgba(255, 245, 210, 0.12), transparent 60%);
+      z-index: 3;
+    }
+
+    .card.breaking::before {
+      animation: crestGlow 0.7s ease;
+    }
+
+    .card.breaking {
+      animation: sealPulse 0.7s ease;
+    }
+
+    .card.breaking .seal-flash {
+      animation: sealFlash 0.7s ease;
+    }
+
+    .card.breaking .top-header {
+      animation: ritualLift 0.7s ease;
+    }
+
+    .card.breaking #revealedView {
+      animation: revealSection 0.55s ease;
+    }
+
+    .card.breaking .sigil-ring {
+      animation: sigilBurst 0.9s ease-out;
+    }
+
+    .card.breaking .order-mark::before {
+      opacity: 0.30;
+      transform: translate(-50%, -50%) scale(1.05);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .seal-crack {
+      position: absolute;
+      left: 50%;
+      top: 40px;
+      width: 260px;
+      height: 120px;
+      transform: translateX(-50%) scale(0.8) rotate(-6deg);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .seal-crack::before,
+    .seal-crack::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+    }
+
+    .seal-crack::before {
+      background-image:
+        linear-gradient(115deg,
+          transparent 0%,
+          transparent 42%,
+          rgba(255, 220, 120, 0.0) 44%,
+          rgba(255, 220, 120, 0.95) 46%,
+          rgba(120, 70, 20, 0.8) 48%,
+          rgba(255, 220, 120, 0.95) 50%,
+          rgba(255, 220, 120, 0.0) 52%,
+          transparent 55%,
+          transparent 100%);
+      filter: blur(0.3px);
+    }
+
+    .seal-crack::after {
+      background-image:
+        linear-gradient(70deg,
+          transparent 0%,
+          transparent 47%,
+          rgba(255, 220, 120, 0.0) 49%,
+          rgba(255, 235, 170, 0.7) 50%,
+          rgba(255, 220, 120, 0.0) 51%,
+          transparent 53%,
+          transparent 100%);
+      transform: translateY(8px) translateX(10px) scale(0.92);
+      opacity: 0.65;
+    }
+
+    .card.breaking .seal-crack {
+      animation: crackAppear 0.75s ease-out;
+    }
+
+    @keyframes crackAppear {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.6) rotate(-8deg);
+      }
+
+      20% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1.02) rotate(-5deg);
+      }
+
+      55% {
+        opacity: 0.95;
+        transform: translateX(-50%) scale(1) rotate(-6deg);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) scale(1.06) rotate(-6deg);
+      }
+    }
+
+    @keyframes sigilGlow {
+      0% {
+        text-shadow:
+          0 0 12px rgba(212,175,55,0.15),
+          0 0 22px rgba(212,175,55,0.15);
+        transform: scale(1);
+      }
+
+      50% {
+        text-shadow:
+          0 0 22px rgba(212,175,55,0.45),
+          0 0 38px rgba(212,175,55,0.25);
+        transform: scale(1.02);
+      }
+
+      100% {
+        text-shadow:
+          0 0 12px rgba(212,175,55,0.15),
+          0 0 22px rgba(212,175,55,0.15);
+        transform: scale(1);
+      }
+    }
+
+    @keyframes sigilAura {
+      0% { transform: scale(0.9); opacity: 0.4; }
+      50% { transform: scale(1.15); opacity: 0.7; }
+      100% { transform: scale(0.9); opacity: 0.4; }
+    }
+
+    @keyframes sigilBurst {
+      0% {
+        opacity: 0.9;
+        transform: scale(0.2);
+        border-width: 3px;
+      }
+
+      50% {
+        opacity: 0.6;
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(9);
+        border-width: 1px;
+      }
+    }
+
+    @keyframes sealFlash {
+      0% {
+        opacity: 0;
+        transform: scale(0.96);
+      }
+      18% {
+        opacity: 1;
+        transform: scale(1.01);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.04);
+      }
+    }
+
+    @keyframes sealPulse {
+      0% {
+        transform: scale(1);
+        box-shadow: var(--shadow);
+      }
+      25% {
+        transform: scale(1.008);
+        box-shadow: 0 0 60px rgba(212, 175, 55, 0.2);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: var(--shadow);
+      }
+    }
+
+    @keyframes crestGlow {
+      0% {
+        opacity: 1;
+      }
+      30% {
+        opacity: 1;
+        filter: brightness(1.35);
+      }
+      100% {
+        opacity: 1;
+        filter: brightness(1);
+      }
+    }
+
+    @keyframes ritualLift {
+      0% {
+        transform: translateY(0);
+      }
+      30% {
+        transform: translateY(-2px);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes revealSection {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #embers {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.35;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 28px 16px;
+      }
+
+      .card {
+        padding: 44px 18px 28px;
+        border-radius: 20px;
+      }
+
+      h1 {
+        font-size: 1.7rem;
+        letter-spacing: 0.06em;
+      }
+
+      input,
+      input::placeholder {
+        font-size: 0.9rem;
+        letter-spacing: 0.04em;
+      }
+
+      .input-row {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .sigil {
+        font-size: 32px;
+      }
+
+      .top-header {
+        margin-bottom: 22px;
+      }
+
+      .seal-crack {
+        width: 180px;
+        height: 90px;
+        top: 92px;
+      }
+
+      .order-mark::before {
+        width: 260px;
+        height: 260px;
+        top: 46%;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <canvas id="embers"></canvas>
+  <main class="wrap">
+    <section class="card">
+      <div id="sealFlash" class="seal-flash"></div>
+      <div id="sealCrack" class="seal-crack"></div>
+      <div class="order-mark" aria-hidden="true"></div>
+
+      <div class="top-header">
+        <div class="sigil">
+          ☉ XXXVI ☉
+          <span class="sigil-ring"></span>
+        </div>
+        <h1>- FORTROLIGT -</h1>
+      </div>
+
+      <div id="lockedView">
+        <label class="label" for="code">Adgangskode</label>
+        <div class="input-row">
+          <input id="code" name="code" type="text" placeholder="Indtast indkaldelseskoden" autocomplete="off" />
+          <button id="submitBtn" type="button">Bryd segl</button>
+        </div>
+        <div id="status" class="status" aria-live="polite"></div>
+      </div>
+
+      <div id="revealedView" class="hidden">
+        <div class="divider">✦</div>
+
+        <details id="infoBox" class="info-box" open>
+          <summary>Ordenens instrukser</summary>
+          <div class="info-box-content" id="infoContent"></div>
+        </details>
+
+        <button id="resetBtn" type="button" class="secondary-btn">
+          Luk dokument
+        </button>
+
+        <div class="footer">Fortes Fortuna Adiuvat</div>
+        <div class="tiny">Lørdag d. 13. juni · Mellemløkken 3 · Årslev</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const contactPhone = "28 70 88 10";
+
+    const invitationMap = {
+      HACK999: {
+        team: "Team Hackermen",
+        greeting: "XXXVI-Ordenen har registreret Deres tilknytning til Team Hackermen.",
+        mission: "Som medlem af Team Hackermen forventes De at møde skarpt, tænke hurtigt og bidrage til holdets ære i nattens prøvelser."
+      },
+      LAERER123: {
+        team: "Team Lærermænd",
+        greeting: "XXXVI-Ordenen har registreret Deres tilknytning til Team Lærermænd.",
+        mission: "Som medlem af Team Lærermænd er De en væsentlig del af ordenens strategiske styrke og holdets mulighed for sejr."
+      },
+      FAM1234: {
+        team: "Team La Familia",
+        greeting: "XXXVI-Ordenen har registreret Deres tilknytning til Team La Familia.",
+        mission: "Som medlem af Team La Familia indtræder De i festlighederne med både loyalitet, charme og ansvar for familiens samlede ære."
+      },
+      OEL123: {
+        team: "Team Ølloge",
+        greeting: "XXXVI-Ordenen har registreret Deres tilknytning til Team Ølloge.",
+        mission: "Som medlem af Team Ølloge forventes De at stille med godt humør, stærk moral og vilje til at kæmpe for nattens hæder."
+      }
+    };
+
+    const codeInput = document.getElementById("code");
+    const submitBtn = document.getElementById("submitBtn");
+    const statusEl = document.getElementById("status");
+    const lockedView = document.getElementById("lockedView");
+    const revealedView = document.getElementById("revealedView");
+    const infoContent = document.getElementById("infoContent");
+    const infoBox = document.getElementById("infoBox");
+    const card = document.querySelector(".card");
+    const resetBtn = document.getElementById("resetBtn");
+
+    codeInput.focus();
+
+    resetBtn.addEventListener("click", () => {
+      revealedView.classList.add("hidden");
+      lockedView.classList.remove("hidden");
+
+      submitBtn.disabled = false;
+      codeInput.disabled = false;
+
+      codeInput.value = "";
+      showStatus("");
+
+      codeInput.focus();
+    });
+
+    function normalizeCode(value) {
+      return value
+        .trim()
+        .toUpperCase()
+        .replace(/\s+/g, "")
+        .replace(/Æ/g, "AE")
+        .replace(/Ø/g, "OE")
+        .replace(/Å/g, "AA");
+    }
+
+    function showStatus(message, type = "") {
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`.trim();
+    }
+
+    function buildInfoHtml(match) {
+      return `
+        <p>XXXVI-Ordenen håber, at dette brev finder Dem i fortrolighed.</p>
+        <p>Det er med stor ærbødighed, at De inviteres til to gange attenårs fødselsdag for Andreas Witten Honoré, aka. Andy, aka. Andy the Ape, aka. Fætter, aka. Androkles.</p>
+        <p>${match.greeting}</p>
+        <span class="team-badge">${match.team}</span>
+        <p>De ceremonielle festligheder vil finde sted på <strong>Mellemløkken 3, 5792 Årslev</strong>, lørdag den <strong>13. juni</strong> fra <strong>kl. 14.00</strong> og fortsætter til ud på natten.</p>
+        <p>På dagen er der sørget for forplejning, musik og underholdning samt løbende konkurrencer med præmier til de bedste hold.</p>
+        <p>${match.mission}</p>
+        <div class="sms-box">
+          <p><strong>Bekræft deltagelse via SMS:</strong></p>
+          <p>Send venligst en SMS til Andy med din deltagelsesstatus.</p>
+          <p><strong>Nummer:</strong></p>
+          <p>${contactPhone}</p>
+          <p><strong>S.U.:</strong></p>
+          <p>I forhold til bestilling af mad, rekvirering af borde og stole, arrangering af konkurrencer, etc., bedes De give besked om din deltagelse senest d. 23. maj.</p>
+        </div>
+      `;
+    }
+
+    function openPortal() {
+      const rawCode = codeInput.value;
+      const code = normalizeCode(rawCode);
+
+      if (!code) {
+        showStatus("Du skal indtaste en adgangskode for at fortsætte.", "error");
+        return;
+      }
+
+      const match = invitationMap[code];
+
+      if (!match) {
+        showStatus("Koden blev ikke genkendt. Kontroller indkaldelsen og prøv igen.", "error");
+        return;
+      }
+
+      showStatus("Seglet brydes...", "success");
+      submitBtn.disabled = true;
+      codeInput.disabled = true;
+
+      card.classList.add("breaking");
+
+      setTimeout(() => {
+        infoContent.innerHTML = buildInfoHtml(match);
+        infoBox.open = true;
+        lockedView.classList.add("hidden");
+        revealedView.classList.remove("hidden");
+        showStatus("");
+      }, 520);
+
+      setTimeout(() => {
+        card.classList.remove("breaking");
+      }, 900);
+    }
+
+    submitBtn.addEventListener("click", openPortal);
+
+    codeInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        openPortal();
+      }
+    });
+
+    const canvas = document.getElementById("embers");
+    const ctx = canvas.getContext("2d");
+
+    let particles = [];
+    const PARTICLE_COUNT = 40;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function createParticle() {
+      return {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.8 + 0.4,
+        speed: Math.random() * 0.25 + 0.05,
+        alpha: Math.random() * 0.5 + 0.2
+      };
+    }
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(createParticle());
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let p of particles) {
+        p.y -= p.speed;
+
+        if (p.y < -10) {
+          p.y = canvas.height + 10;
+          p.x = Math.random() * canvas.width;
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+
+        ctx.fillStyle = `rgba(255, 215, 120, ${p.alpha})`;
+        ctx.fill();
+      }
+
+      requestAnimationFrame(animateParticles);
+    }
+
+    animateParticles();
+  </script>
+</body>
+</html>
